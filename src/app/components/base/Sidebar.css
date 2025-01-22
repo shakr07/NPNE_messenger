@@ -1,0 +1,51 @@
+.sidebar {
+    width: 300px; /* Adjust width as needed */
+    background-color: #f4f4f8; /* Light gray background for better readability */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners for a softer look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    font-family: Arial, sans-serif;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.5rem;
+    color: #2c3e50; /* Dark blue for titles */
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .chat-section h3,
+  .providers h2 {
+    font-size: 1.25rem;
+    color: #34495e; /* A slightly lighter dark blue */
+    margin: 10px 0;
+  }
+  
+  .chat-section p,
+  .provider p {
+    font-size: 0.95rem;
+    color: #555; /* Neutral gray for descriptive text */
+    line-height: 1.5;
+  }
+  
+  .provider strong {
+    color: #2c3e50; /* Bold text to highlight names */
+  }
+  
+  .provider {
+    margin-bottom: 15px; /* Extra spacing between providers */
+    padding: 10px;
+    background-color: #ffffff; /* White background for contrast */
+    border: 1px solid #ddd; /* Light border for separation */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s; /* Interactive hover effect */
+  }
+  
+  .provider:hover {
+    transform: scale(1.02); /* Slight scale-up on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Enhance shadow on hover */
+  }
+  .connection,.Make_room{
+    display: flex;
+  }
