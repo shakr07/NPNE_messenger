@@ -4,12 +4,12 @@ import socketInstance from "../socket";
 import Sidebar from "../components/base/Sidebar";
 import ChatArea from "../components/base/ChatArea";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation';  // Import useRouter
+import { useRouter } from 'next/navigation';   
 import DialogBox from "../components/base/DialogBox"
 
 function Page() {
   const [socketID, setSocketID] = useState(null);
-  const router = useRouter();  // Initialize the router
+  const router = useRouter();   
   const [open, setOpen] = useState(false);
 
   // Function to open dialog

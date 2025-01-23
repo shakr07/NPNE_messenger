@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -7,21 +7,43 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import socketInstance from "@/app/socket";
 
-function DialogBox({ open, handleClose }) {
+interface MycomponentProps{
+  handleClose:()=>void;
+  open:boolean
+}
+
+
+function DialogBox({ open, handleClose }:MycomponentProps) {
+  const [passWord,setpassWord]=useState('');
+  const [Name,setName]=useState('');
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       PaperProps={{
         component: "form",
-        onSubmit: (event) => {
+        onSubmit: (event: any) => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
           const formJson = Object.fromEntries(formData.entries());
-          const email = formJson.email;
-          console.log(email);
-          handleClose();  // Close the dialog after submission
+        
+          // Safely extract password and name, ensuring they are strings
+          const password = formJson.password as string;
+          const name = formJson.name as string;
+        
+          // Assign the extracted values to the state
+          setpassWord(password);
+          setName(name);
+        
+          // Optionally log values to debug
+          // console.log(password, name);
+          socketInstance.emit("join-room", {roomName:Name,Password:passWord});
+          // Close the form or modal
+          handleClose();
+          
+          
         },
       }}
     >
