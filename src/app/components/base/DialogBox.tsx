@@ -9,76 +9,78 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import socketInstance from "@/app/socket";
 
-interface MycomponentProps{
-  handleClose:()=>void;
-  open:boolean
+interface MycomponentProps {
+  handleClose: () => void;
+  open: boolean;
+  isMakeRoom: boolean;
 }
 
+function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
-function DialogBox({ open, handleClose }:MycomponentProps) {
-  const [passWord,setpassWord]=useState('');
-  const [Name,setName]=useState('');
+  console.log("DialogBox - isMakeRoom (received prop):", isMakeRoom);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!name || !password) {
+      alert("Please enter both room name and password.");
+      return;
+    }
+
+    console.log("Submitting - Name:", name, "Password:", password, "isMakeRoom:", isMakeRoom);
+
+    if (isMakeRoom) {
+      socketInstance.emit("message", { room: name, message: `Room ${name} created.` });
+    }
+
+    socketInstance.emit("join-room", {
+      roomName: name,
+      password,
+      isMakeRoom,
+    });
+
+    setPassword("");
+    setName("");
+    handleClose();
+  };
+
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      PaperProps={{
-        component: "form",
-        onSubmit: (event: any) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          const formJson = Object.fromEntries(formData.entries());
-        
-          // Safely extract password and name, ensuring they are strings
-          const password = formJson.password as string;
-          const name = formJson.name as string;
-        
-          // Assign the extracted values to the state
-          setpassWord(password);
-          setName(name);
-        
-          // Optionally log values to debug
-          // console.log(password, name);
-          socketInstance.emit("join-room", {roomName:Name,Password:passWord});
-          // Close the form or modal
-          handleClose();
-          
-          
-        },
-      }}
-    >
-      <DialogTitle>Make Chat Room</DialogTitle>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>{isMakeRoom ? "Make Chat Room" : "Join Chat Room"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-        Ensure that the password is memorable so that anyone can join using it.
+          {isMakeRoom
+            ? "Create a new chat room. Make sure to share the room name and password."
+            : "Enter the room name and password to join."}
         </DialogContentText>
-        <TextField
-          autoFocus
-          required
-          margin="dense"
-          id="name"
-          name="name"
-          label="Chat room Name"
-          type="text"
-          fullWidth
-          variant="standard"
-        />
-         <TextField
-          autoFocus
-          required
-          margin="dense"
-          id="password"
-          name="password"
-          label="Password"
-          type="password"
-          fullWidth
-          variant="standard"
-        />
+        <form onSubmit={handleSubmit}>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            label="Chat Room Name"
+            type="text"
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            required
+            margin="dense"
+            label="Password"
+            type="password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Submit</Button>
+          </DialogActions>
+        </form>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button type="submit">submit</Button>
-      </DialogActions>
     </Dialog>
   );
 }
