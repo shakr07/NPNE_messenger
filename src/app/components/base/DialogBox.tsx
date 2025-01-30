@@ -8,6 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import socketInstance from "@/app/socket";
+import ChatArea from "./ChatArea";
 
 interface MycomponentProps {
   handleClose: () => void;
@@ -18,7 +19,7 @@ interface MycomponentProps {
 function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-
+  
   console.log("DialogBox - isMakeRoom (received prop):", isMakeRoom);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -34,7 +35,9 @@ function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
     if (isMakeRoom) {
       socketInstance.emit("message", { room: name, message: `Room ${name} created.` });
     }
-
+    localStorage.removeItem('roomName');
+    localStorage.setItem('roomName', name);
+    <ChatArea/>
     socketInstance.emit("join-room", {
       roomName: name,
       password,
@@ -51,10 +54,12 @@ function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
       <DialogTitle>{isMakeRoom ? "Make Chat Room" : "Join Chat Room"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
+          
           {isMakeRoom
             ? "Create a new chat room. Make sure to share the room name and password."
             : "Enter the room name and password to join."}
         </DialogContentText>
+       
         <form onSubmit={handleSubmit}>
           <TextField
             autoFocus
@@ -81,7 +86,9 @@ function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
           </DialogActions>
         </form>
       </DialogContent>
+      
     </Dialog>
+    
   );
 }
 
