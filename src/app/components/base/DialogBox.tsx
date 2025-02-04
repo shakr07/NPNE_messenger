@@ -8,6 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import socketInstance from "@/app/socket";
+import axios from "axios";
 import ChatArea from "./ChatArea";
 
 interface MycomponentProps {
@@ -19,31 +20,42 @@ interface MycomponentProps {
 function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  
-  console.log("DialogBox - isMakeRoom (received prop):", isMakeRoom);
+  const [messages, setMessages] = useState<any[]>([]); // Store messages here
+
+  const fetchMessages = async (roomName: string) => {
+    console.log("api runs: ",roomName);
+    
+    try {
+      const response = await axios.post("http://localhost:4000/api/v1/getChat", {
+        roomName,
+      });
+      console.log("API response:", response.data);
+      setMessages(response.data); 
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (!name || !password) {
       alert("Please enter both room name and password.");
       return;
     }
-
     console.log("Submitting - Name:", name, "Password:", password, "isMakeRoom:", isMakeRoom);
-
+    console.log("fetchMessage: ",name);
+    fetchMessages(name); 
     if (isMakeRoom) {
       socketInstance.emit("message", { room: name, message: `Room ${name} created.` });
     }
+    
     localStorage.removeItem('roomName');
     localStorage.setItem('roomName', name);
-    <ChatArea/>
     socketInstance.emit("join-room", {
       roomName: name,
       password,
       isMakeRoom,
     });
-
     setPassword("");
     setName("");
     handleClose();
@@ -54,12 +66,10 @@ function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
       <DialogTitle>{isMakeRoom ? "Make Chat Room" : "Join Chat Room"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          
           {isMakeRoom
             ? "Create a new chat room. Make sure to share the room name and password."
             : "Enter the room name and password to join."}
         </DialogContentText>
-       
         <form onSubmit={handleSubmit}>
           <TextField
             autoFocus
@@ -86,9 +96,8 @@ function DialogBox({ open, handleClose, isMakeRoom }: MycomponentProps) {
           </DialogActions>
         </form>
       </DialogContent>
-      
+      {messages.length >=0 && <ChatArea messages={messages} />} {/* Render ChatArea when messages are available */}
     </Dialog>
-    
   );
 }
 

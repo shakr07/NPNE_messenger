@@ -1,38 +1,49 @@
-"use client"
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useState } from "react";
 import "./ChatArea.css";
-import { log } from "node:console";
-import axios from 'axios';
-/// /  const [name, setName] = useState<string>("");
 
-const ChatArea = () => {  
-  const storedName = localStorage.getItem("roomName");
-  if (storedName) {
-    //setName(storedName);
-    console.log("Chat room name retrieved:", storedName);
-  }
+interface ChatAreaProps {
+  messages: any[];  
+}
 
-  const fetchMessage=async()=>{
-    try {
-      const messAge=await axios.get('http://localhost:4000/api/v1/getChat')
-    } catch (error) {
-      
-    }
-  }
- // console.log("chatarea");
-  
+const ChatArea = ({ messages = [] }: ChatAreaProps) => {
+  const [message, setMessage] = useState("");
+
+  const submitMessage = (): void => {
+    console.log(message);
+    setMessage(""); 
+  };
+
+  const textMessage = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setMessage(event.target.value);
+  };
+
   return (
     <div className="chat-area">
       <div className="chat-header">
-        <p>You are now chatting in room: <strong>"name"</strong></p>
+        <p>
+          You are now chatting in room: <strong>{messages.length > 0 ? messages[0]?.roomName : "Unnamed Room"}</strong>
+        </p>
       </div>
       <div className="chat-messages">
-        <div className="message sent">Chat with an agent</div>
-        <div className="message received">How can I help you today?</div>
+        {messages.length > 0 ? (
+          messages.map((msg, index) => (
+            <div key={index} className="message">
+              {msg.content}
+            </div>
+          ))
+        ) : (
+          <div className="no-chat-message">No chat available at this moment</div>
+        )}
       </div>
       <div className="chat-input">
-        <input type="text" placeholder="Write a message..." />
-        <button>Send</button>
+        <input 
+          type="text" 
+          value={message} 
+          placeholder="Write a message..." 
+          onChange={textMessage} 
+        />
+        <button onClick={submitMessage}>Send</button>
       </div>
     </div>
   );
